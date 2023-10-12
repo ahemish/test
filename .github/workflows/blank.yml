@@ -29,6 +29,7 @@ jobs:
       - name: TFplan
         run: echo "Running Terraform plan"
   Deploy:
+    needs: [Plan]
     environment:
       name: dev
       url: http://placeholder.com
