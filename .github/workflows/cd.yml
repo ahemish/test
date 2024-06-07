@@ -1,0 +1,41 @@
+name: Terraform Plan & Apply for AWS Accounts
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types:
+      - opened
+      - edited
+      - reopened
+      - synchronize
+    branches:
+      - main
+  release:
+    types:
+      - released
+
+jobs:
+  run-terraform:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        environment: [dev, preprod, prod]
+        include:
+          - environment: preprod
+            needs: run-terraform-dev
+          - environment: prod
+            needs: run-terraform-preprod
+    needs: ${{ matrix.needs }}
+    permissions:
+      id-token: write
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v3
+        name: Git checkout
+      - name: test env
+        run: |
+          echo "Hello world"
+          echo ${{ matrix.environment }}
