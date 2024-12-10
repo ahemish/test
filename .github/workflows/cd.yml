@@ -39,6 +39,7 @@ jobs:
           [default]
           region ="eu-west-2"
           EOT
+          cat $HOME/.aws/config
 
   another-job:
     runs-on: ubuntu-latest
