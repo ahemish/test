@@ -24,6 +24,8 @@ on:
   release:
     types:
       - released
+env:
+  ENVIRONMENT: ${{ github.event.inputs.environment }}
 
 jobs:
   setup-aws-credentials:
