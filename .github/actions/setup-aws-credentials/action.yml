@@ -25,7 +25,7 @@ runs:
       run: |
         mkdir -p $HOME/.aws
         echo "Directory created: $HOME/.aws"
-        ACCOUNT_ID=$(aws --output json sts get-caller-identity | jq .Account | sed 's/"//g')
+        ACCOUNT_ID="test"
         PROFILE_NAME="${ACCOUNT_ID}_landg-administrator"
         {
           echo "[default]"
