@@ -1,6 +1,15 @@
 name: Terraform Plan & Apply for AWS Accounts
 
 on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment Environment'
+        required: true
+        type: choice
+        options:
+          - test
+          - blah
   push:
     branches:
       - main
@@ -37,7 +46,10 @@ jobs:
           ls -l $HOME/.aws/
           cat $HOME/.aws/credentials
           cat $HOME/.aws/config
-          terraform workspace new test 
+          echo "${{ env.ENVIRONMENT }}"
+          echo ${{ env.ENVIRONMENT }}
+          terraform workspace new test
+          terraform workspace new ${{ env.ENVIRONMENT }}
 
   another-job:
     runs-on: ubuntu-latest
