@@ -51,7 +51,7 @@ jobs:
           echo "${{ env.ENVIRONMENT }}"
           echo ${{ env.ENVIRONMENT }}
           terraform workspace new test
-          terraform workspace new "${{ env.ENVIRONMENT }}"
+          terraform workspace new ${{ env.ENVIRONMENT }}
 
   another-job:
     runs-on: ubuntu-latest
