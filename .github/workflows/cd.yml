@@ -20,37 +20,44 @@ jobs:
   setup-aws-credentials:
     runs-on: ubuntu-latest
     steps:
-      - name: Create AWS credentials files
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup AWS Credentials
+        uses: ./.github/actions/setup-aws-credentials
+        with:
+          aws_region: ${{ secrets.AWS_REGION }}
+          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws_session_token: ${{ secrets.AWS_SESSION_TOKEN }}
+
+      - name: Check AWS credentials
         run: |
-          mkdir -p $HOME/.aws
-          ACCOUNT_ID="12345"
-          PROFILE_NAME="testing"
-          {
-            echo "[default]"
-            echo "aws_access_key_id=$AWS_ACCESS_KEY_ID"
-            echo "aws_secret_access_key=$AWS_SECRET_ACCESS_KEY"
-            echo "aws_session_token=$AWS_SESSION_TOKEN"
-            echo "[$PROFILE_NAME]"
-            echo "aws_access_key_id=$AWS_ACCESS_KEY_ID"
-            echo "aws_secret_access_key=$AWS_SECRET_ACCESS_KEY"
-            echo "aws_session_token=$AWS_SESSION_TOKEN"
-          } >>  $HOME/.aws/credentials
-          cat <<EOT >> $HOME/.aws/config
-          [default]
-          region ="eu-west-2"
-          EOT
+          echo "Checking AWS credentials..."
+          ls -l $HOME/.aws/
+          cat $HOME/.aws/credentials
           cat $HOME/.aws/config
 
   another-job:
     runs-on: ubuntu-latest
     needs: setup-aws-credentials
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        
+      - name: Setup AWS Credentials
+        uses: ./.github/actions/setup-aws-credentials
+        with:
+          aws_region: ${{ secrets.AWS_REGION }}
+          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws_session_token: ${{ secrets.AWS_SESSION_TOKEN }}
       - name: Check AWS credentials
         run: |
           echo "Checking AWS credentials..."
+          ls -l $HOME/.aws/
           cat $HOME/.aws/credentials
           cat $HOME/.aws/config
-          aws sts get-caller-identity
 
 # jobs:
   # run-terraform:
