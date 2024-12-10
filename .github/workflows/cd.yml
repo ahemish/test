@@ -17,25 +17,60 @@ on:
       - released
 
 jobs:
-  run-terraform:
+  setup-aws-credentials:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        environment: [dev, preprod, prod]
-        include:
-          - environment: preprod
-            needs: run-terraform-dev
-          - environment: prod
-            needs: run-terraform-preprod
-    needs: ${{ matrix.needs }}
-    permissions:
-      id-token: write
-      contents: read
-      pull-requests: write
     steps:
-      - uses: actions/checkout@v3
-        name: Git checkout
-      - name: test env
+      - name: Create AWS credentials files
         run: |
-          echo "Hello world"
-          echo ${{ matrix.environment }}
+          mkdir -p $HOME/.aws
+          ACCOUNT_ID="12345"
+          PROFILE_NAME="testing"
+          {
+            echo "[default]"
+            echo "aws_access_key_id=$AWS_ACCESS_KEY_ID"
+            echo "aws_secret_access_key=$AWS_SECRET_ACCESS_KEY"
+            echo "aws_session_token=$AWS_SESSION_TOKEN"
+            echo "[$PROFILE_NAME]"
+            echo "aws_access_key_id=$AWS_ACCESS_KEY_ID"
+            echo "aws_secret_access_key=$AWS_SECRET_ACCESS_KEY"
+            echo "aws_session_token=$AWS_SESSION_TOKEN"
+          } >>  $HOME/.aws/credentials
+          cat <<EOT >> $HOME/.aws/config
+          [default]
+          region ="eu-west-2"
+          EOT
+
+  another-job:
+    runs-on: ubuntu-latest
+    needs: setup-aws-credentials
+    steps:
+      - name: Check AWS credentials
+        run: |
+          echo "Checking AWS credentials..."
+          cat $HOME/.aws/credentials
+          cat $HOME/.aws/config
+          aws sts get-caller-identity
+
+# jobs:
+  # run-terraform:
+  #   runs-on: ubuntu-latest
+  #   strategy:
+  #     matrix:
+  #       environment: [dev, preprod, prod]
+  #       include:
+  #         - environment: preprod
+  #           needs: run-terraform-dev
+  #         - environment: prod
+  #           needs: run-terraform-preprod
+  #   needs: ${{ matrix.needs }}
+  #   permissions:
+  #     id-token: write
+  #     contents: read
+  #     pull-requests: write
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #       name: Git checkout
+  #     - name: test env
+  #       run: |
+  #         echo "Hello world"
+  #         echo ${{ matrix.environment }}
