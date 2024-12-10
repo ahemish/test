@@ -37,7 +37,7 @@ jobs:
           ls -l $HOME/.aws/
           cat $HOME/.aws/credentials
           cat $HOME/.aws/config
-          terraform workspace
+          terraform workspace new test 
 
   another-job:
     runs-on: ubuntu-latest
