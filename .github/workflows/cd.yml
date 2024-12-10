@@ -1,6 +1,5 @@
 name: Terraform Plan & Apply for AWS Accounts
 
-
 on:
   push:
     branches:
